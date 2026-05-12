@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="【テスト用サイト】CONTACT">
+  <title>CONTACT — TEST</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    select.form-input option { background: var(--bg-2); color: var(--text); }
+    input[type="checkbox"] { accent-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header is-scrolled">
+    <a href="index.html" class="site-logo">
+      TEST
+      <small>テスト用サイト</small>
+    </a>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="about.html">ABOUT</a></li>
+        <li><a href="works.html">WORKS</a></li>
+        <li><a href="access.html">ACCESS</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button>
+  </header>
+
+  <div class="sp-menu">
+    <a href="about.html">ABOUT</a>
+    <a href="works.html">WORKS</a>
+    <a href="access.html">ACCESS</a>
+    <a href="contact.html">CONTACT</a>
+  </div>
+
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-content">
+      <h1 class="page-hero-en">Contact</h1>
+      <p class="page-hero-ja">お問い合わせ</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="fade-in">
+      <p class="section-eyebrow">Contact</p>
+      <h2 class="section-title">お問い合わせ</h2>
+      <p class="section-body" style="margin-bottom: 3rem;">
+        建築設計・企画に関するご相談、お見積り依頼など、お気軽にお問い合わせください。<br>
+        内容を確認のうえ、担当者よりご連絡いたします。
+      </p>
+    </div>
+
+    <div class="contact-wrap fade-in delay-1">
+      <form action="#" method="post" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="name">お名前<span class="req">※ 必須</span></label>
+          <input class="form-input" type="text" id="name" name="name" placeholder="山田 太郎" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="company">会社名・組織名</label>
+          <input class="form-input" type="text" id="company" name="company" placeholder="株式会社〇〇">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">メールアドレス<span class="req">※ 必須</span></label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="example@mail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tel">電話番号</label>
+          <input class="form-input" type="tel" id="tel" name="tel" placeholder="06-0000-0000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="subject">お問い合わせ種別<span class="req">※ 必須</span></label>
+          <select class="form-input" id="subject" name="subject" required style="cursor:pointer;">
+            <option value="" disabled selected>選択してください</option>
+            <option value="design">建築設計・企画のご相談</option>
+            <option value="estimate">お見積りのご依頼</option>
+            <option value="works">作品に関するお問い合わせ</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="message">お問い合わせ内容<span class="req">※ 必須</span></label>
+          <textarea class="form-textarea" id="message" name="message" placeholder="ご質問・ご相談内容をご記入ください。" required></textarea>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:flex-start; gap:0.75rem;">
+          <input type="checkbox" id="privacy" name="privacy" required style="margin-top:3px;">
+          <label for="privacy" style="font-size:0.8rem; color: var(--text-sub); line-height:1.7; cursor:pointer;">
+            <a href="#" style="color: var(--accent); border-bottom: 1px solid rgba(201,169,110,0.4);">プライバシーポリシー</a>に同意する
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit">SEND MESSAGE</button>
+      </form>
+
+      <div style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border);">
+        <p class="section-eyebrow" style="margin-bottom: 1rem;">Direct</p>
+        <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 2;">
+          お電話でのお問い合わせ<br>
+          <a href="tel:0661314371" style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--text); letter-spacing: 0.1em;">
+            06-6131-4371
+          </a><br>
+          <span style="font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-muted);">月〜金　9:00 – 18:00</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <span class="footer-logo">TEST</span>
+    <span class="footer-copy">© TEST — テスト用サイト</span>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

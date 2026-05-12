@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="【テスト用サイト】WORKS">
+  <title>WORKS — TEST</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .works-full-grid {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.5rem 0.75rem;
+    }
+    @media (max-width: 1100px) { .works-full-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px)  { .works-full-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px)  { .works-full-grid { grid-template-columns: repeat(2, 1fr); } }
+    .work-item-img { aspect-ratio: 3/2; }
+    .work-item-name { font-size: 0.82rem; }
+    .cat-heading {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-serif);
+      font-size: 0.68rem;
+      letter-spacing: 0.4em;
+      color: var(--accent);
+    }
+    .cat-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .cat-heading:first-child { margin-top: 0; border-top: none; }
+    a.work-item {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header is-scrolled">
+    <a href="index.html" class="site-logo">
+      TEST
+      <small>テスト用サイト</small>
+    </a>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="about.html">ABOUT</a></li>
+        <li><a href="works.html">WORKS</a></li>
+        <li><a href="access.html">ACCESS</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button>
+  </header>
+
+  <div class="sp-menu">
+    <a href="about.html">ABOUT</a>
+    <a href="works.html">WORKS</a>
+    <a href="access.html">ACCESS</a>
+    <a href="contact.html">CONTACT</a>
+  </div>
+
+  <div class="page-hero">
+    <div class="page-hero-bg" style="background-image: url('images/16857/img20250901162335203102.jpg');"></div>
+    <div class="page-hero-content">
+      <h1 class="page-hero-en">Works</h1>
+      <p class="page-hero-ja">作品集</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="fade-in">
+      <p class="section-eyebrow">Portfolio</p>
+      <h2 class="section-title">作品一覧</h2>
+    </div>
+
+    <div class="works-filter fade-in">
+      <button class="filter-btn is-active" data-cat="all">ALL</button>
+      <button class="filter-btn" data-cat="apartment">APARTMENT</button>
+      <button class="filter-btn" data-cat="house">HOUSE</button>
+      <button class="filter-btn" data-cat="medical">MEDICAL</button>
+      <button class="filter-btn" data-cat="other">OTHER</button>
+    </div>
+
+    <div class="works-full-grid" id="works-grid"></div>
+  </section>
+
+  <footer class="site-footer">
+    <span class="footer-logo">TEST</span>
+    <span class="footer-copy">© TEST — テスト用サイト</span>
+  </footer>
+
+  <script src="js/works-data.js"></script>
+  <script>
+    (function () {
+      const grid = document.getElementById('works-grid');
+      const catLabels = {
+        apartment: 'APARTMENT — 集合住宅',
+        house:     'HOUSE — 住宅',
+        medical:   'MEDICAL — 医療福祉施設',
+        other:     'OTHER — その他'
+      };
+      const delays = ['', ' delay-1', ' delay-2', ' delay-3'];
+      let lastCat = null;
+      let delayIdx = 0;
+
+      WORKS.forEach(function (work) {
+        if (work.cat !== lastCat) {
+          const heading = document.createElement('p');
+          heading.className = 'cat-heading';
+          heading.dataset.catLabel = work.cat;
+          heading.textContent = catLabels[work.cat] || work.cat.toUpperCase();
+          grid.appendChild(heading);
+          lastCat = work.cat;
+          delayIdx = 0;
+        }
+
+        const thumb = (work.photos && work.photos.length) ? work.photos[0] : '';
+        const a = document.createElement('a');
+        a.href = 'work.html?id=' + work.id;
+        a.className = 'work-item fade-in' + delays[delayIdx % 4];
+        a.dataset.cat = work.cat;
+        const yearStr = (work.year && work.year !== '—') ? work.year : '';
+        a.innerHTML =
+          '<div class="work-item-img"><img src="' + thumb + '" alt="' + work.name + '" loading="lazy"></div>' +
+          (yearStr ? '<p class="work-item-year">' + yearStr + '</p>' : '') +
+          '<p class="work-item-name">' + work.name + '</p>';
+        grid.appendChild(a);
+        delayIdx++;
+      });
+    })();
+  </script>
+  <script src="js/main.js"></script>
+  <script>
+    document.querySelectorAll('.filter-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cat = btn.dataset.cat;
+        document.querySelectorAll('.cat-heading').forEach(function (h) {
+          h.style.display = (cat === 'all' || cat === h.dataset.catLabel) ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

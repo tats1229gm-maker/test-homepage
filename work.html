@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="【テスト用サイト】作品詳細">
+  <title>WORKS — TEST</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ---- detail layout ---- */
+    .detail-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 3rem 7rem;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 3rem 5rem;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .detail-wrap { grid-template-columns: 1fr; padding: 3rem 1.5rem 5rem; }
+    }
+
+    /* gallery */
+    .detail-gallery {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: var(--bg-3);
+      overflow: hidden;
+    }
+    .gallery-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.8s var(--ease);
+    }
+    .gallery-slide.is-active { opacity: 1; }
+    .gallery-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.9);
+    }
+
+    /* arrow buttons */
+    .gallery-prev,
+    .gallery-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: transparent;
+      border: 1px solid rgba(201,169,110,0.35);
+      color: var(--accent);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .gallery-prev:hover,
+    .gallery-next:hover {
+      background: rgba(201,169,110,0.15);
+      border-color: var(--accent);
+    }
+    .gallery-prev { left: 1.2rem; }
+    .gallery-next { right: 1.2rem; }
+
+    /* dots */
+    .gallery-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 1.2rem;
+    }
+    .gallery-dot {
+      width: 24px;
+      height: 1px;
+      background: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      padding: 4px 0;
+      background-clip: content-box;
+      transition: background 0.3s, width 0.3s;
+    }
+    .gallery-dot.is-active {
+      background: var(--accent);
+      width: 40px;
+    }
+
+    /* thumbnail strip */
+    .gallery-thumbs {
+      display: flex;
+      gap: 6px;
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .gallery-thumbs::-webkit-scrollbar { display: none; }
+    .gallery-thumb {
+      flex: 0 0 72px;
+      height: 52px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    .gallery-thumb.is-active { border-color: var(--accent); }
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.65) saturate(0.7);
+      transition: filter 0.3s;
+    }
+    .gallery-thumb.is-active img,
+    .gallery-thumb:hover img { filter: brightness(0.9) saturate(1); }
+
+    /* single image */
+    .detail-single-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.85);
+    }
+
+    /* info panel */
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      transition: color 0.25s;
+    }
+    .detail-back::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.3s var(--ease);
+    }
+    .detail-back:hover { color: var(--accent); }
+    .detail-back:hover::before { width: 32px; }
+
+    .detail-cat {
+      font-family: var(--font-serif);
+      font-size: 0.62rem;
+      letter-spacing: 0.4em;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+
+    .detail-name {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 300;
+      line-height: 1.25;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .detail-table th,
+    .detail-table td {
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    .detail-table th {
+      width: 7em;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    .detail-table td { color: var(--text-sub); }
+
+    .detail-contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 2.5rem;
+      font-family: var(--font-serif);
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      transition: gap 0.3s var(--ease);
+    }
+    .detail-contact-link::after {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.4s var(--ease);
+    }
+    .detail-contact-link:hover { gap: 1.2rem; }
+    .detail-contact-link:hover::after { width: 36px; }
+
+    /* next / prev work nav */
+    .work-nav {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .work-nav-item {
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: background 0.3s;
+      color: inherit;
+    }
+    .work-nav-item:hover { background: var(--bg-2); }
+    .work-nav-item + .work-nav-item { border-left: 1px solid var(--border); }
+    .work-nav-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      color: var(--text-muted);
+    }
+    .work-nav-title {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      color: var(--text-sub);
+      transition: color 0.3s;
+    }
+    .work-nav-item:hover .work-nav-title { color: var(--text); }
+    @media (max-width: 640px) {
+      .detail-wrap { padding: 3rem 1.5rem 4rem; }
+      .work-nav { grid-template-columns: 1fr; }
+      .work-nav-item + .work-nav-item { border-left: none; border-top: 1px solid var(--border); }
+      .work-nav-item { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header is-scrolled">
+    <a href="index.html" class="site-logo">
+      TEST
+      <small>テスト用サイト</small>
+    </a>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="about.html">ABOUT</a></li>
+        <li><a href="works.html">WORKS</a></li>
+        <li><a href="access.html">ACCESS</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button>
+  </header>
+
+  <div class="sp-menu">
+    <a href="about.html">ABOUT</a>
+    <a href="works.html">WORKS</a>
+    <a href="access.html">ACCESS</a>
+    <a href="contact.html">CONTACT</a>
+  </div>
+
+  <div class="page-hero" id="js-hero">
+    <div class="page-hero-bg" id="js-hero-bg"></div>
+    <div class="page-hero-content">
+      <h1 class="page-hero-en" id="js-hero-en">Works</h1>
+      <p class="page-hero-ja" id="js-hero-ja">作品詳細</p>
+    </div>
+  </div>
+
+  <div class="detail-wrap" id="js-detail">
+    <p style="color:var(--text-muted); font-size:0.9rem;">読み込み中…</p>
+  </div>
+
+  <nav class="work-nav" id="js-work-nav"></nav>
+
+  <footer class="site-footer">
+    <span class="footer-logo">TEST</span>
+    <span class="footer-copy">© TEST — テスト用サイト</span>
+  </footer>
+
+  <script src="js/works-data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      const work = id && WORKS_MAP[id];
+
+      if (!work) {
+        document.getElementById('js-detail').innerHTML =
+          '<p style="color:var(--text-muted);">作品が見つかりませんでした。<a href="works.html" style="color:var(--accent);">一覧へ戻る</a></p>';
+        return;
+      }
+
+      /* page title */
+      document.title = work.name + ' — TEST';
+      document.getElementById('js-hero-en').textContent = work.name;
+      const catLabel = { apartment:'集合住宅', house:'住宅', medical:'医療福祉施設', other:'その他' };
+      document.getElementById('js-hero-ja').textContent = catLabel[work.cat] || '作品詳細';
+      if (work.photos && work.photos.length) {
+        document.getElementById('js-hero-bg').style.backgroundImage = 'url(' + work.photos[0] + ')';
+      }
+
+      /* gallery */
+      let galleryHTML = '';
+      if (work.photos && work.photos.length > 1) {
+        const slides = work.photos.map(function (p, i) {
+          return '<div class="gallery-slide' + (i === 0 ? ' is-active' : '') + '">' +
+            '<img src="' + p + '" alt="' + work.name + ' 写真' + (i + 1) + '" loading="lazy"></div>';
+        }).join('');
+        const dots = work.photos.map(function (_, i) {
+          return '<button class="gallery-dot' + (i === 0 ? ' is-active' : '') + '" data-idx="' + i + '"></button>';
+        }).join('');
+        const thumbs = work.photos.map(function (p, i) {
+          return '<div class="gallery-thumb' + (i === 0 ? ' is-active' : '') + '" data-idx="' + i + '">' +
+            '<img src="' + p + '" alt="" loading="lazy"></div>';
+        }).join('');
+        galleryHTML =
+          '<div class="detail-gallery" id="js-gallery">' +
+            slides +
+            '<button class="gallery-prev" id="js-prev">&#8592;</button>' +
+            '<button class="gallery-next" id="js-next">&#8594;</button>' +
+          '</div>' +
+          '<div class="gallery-dots" id="js-dots">' + dots + '</div>' +
+          '<div class="gallery-thumbs" id="js-thumbs">' + thumbs + '</div>';
+      } else if (work.photos && work.photos.length === 1) {
+        galleryHTML = '<img class="detail-single-img" src="' + work.photos[0] + '" alt="' + work.name + '">';
+      }
+
+      /* specs */
+      const catEn = { apartment:'APARTMENT', house:'HOUSE', medical:'MEDICAL', other:'OTHER' };
+      const rows = [
+        ['竣工',     work.year],
+        ['所在地',   work.location],
+        ['用途',     work.use],
+        ['延床面積', work.area],
+        ['構造規模', work.structure],
+      ].map(function (r) {
+        return '<tr><th>' + r[0] + '</th><td>' + (r[1] || '—') + '</td></tr>';
+      }).join('');
+
+      const infoHTML =
+        '<div class="detail-info">' +
+          '<a href="works.html" class="detail-back">WORKS 一覧に戻る</a>' +
+          '<p class="detail-cat">' + (catEn[work.cat] || '') + '</p>' +
+          '<h1 class="detail-name">' + work.name + '</h1>' +
+          '<table class="detail-table"><tbody>' + rows + '</tbody></table>' +
+          '<a href="contact.html" class="detail-contact-link">お問い合わせ</a>' +
+        '</div>';
+
+      document.getElementById('js-detail').innerHTML =
+        '<div>' + galleryHTML + '</div>' + infoHTML;
+
+      /* gallery controls */
+      const gallery = document.getElementById('js-gallery');
+      if (gallery) {
+        const slides2  = gallery.querySelectorAll('.gallery-slide');
+        const dotBtns  = document.getElementById('js-dots').querySelectorAll('.gallery-dot');
+        const thumbEls = document.getElementById('js-thumbs').querySelectorAll('.gallery-thumb');
+        let cur = 0;
+
+        function goTo(idx) {
+          slides2[cur].classList.remove('is-active');
+          dotBtns[cur].classList.remove('is-active');
+          thumbEls[cur].classList.remove('is-active');
+          cur = (idx + slides2.length) % slides2.length;
+          slides2[cur].classList.add('is-active');
+          dotBtns[cur].classList.add('is-active');
+          thumbEls[cur].classList.add('is-active');
+          thumbEls[cur].scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
+        }
+
+        document.getElementById('js-prev').addEventListener('click', function () { goTo(cur - 1); });
+        document.getElementById('js-next').addEventListener('click', function () { goTo(cur + 1); });
+        dotBtns.forEach(function (btn, i) { btn.addEventListener('click', function () { goTo(i); }); });
+        thumbEls.forEach(function (el, i) { el.addEventListener('click', function () { goTo(i); }); });
+      }
+
+      /* prev / next work navigation */
+      const workIndex = WORKS.findIndex(function (w) { return w.id === work.id; });
+      const prev = WORKS[workIndex - 1];
+      const next = WORKS[workIndex + 1];
+      const nav  = document.getElementById('js-work-nav');
+      if (prev || next) {
+        nav.innerHTML =
+          (prev
+            ? '<a href="work.html?id=' + prev.id + '" class="work-nav-item">' +
+                '<span class="work-nav-label">← PREV</span>' +
+                '<span class="work-nav-title">' + prev.name + '</span>' +
+              '</a>'
+            : '<div class="work-nav-item"></div>') +
+          (next
+            ? '<a href="work.html?id=' + next.id + '" class="work-nav-item">' +
+                '<span class="work-nav-label">NEXT →</span>' +
+                '<span class="work-nav-title">' + next.name + '</span>' +
+              '</a>'
+            : '<div class="work-nav-item"></div>');
+      }
+    })();
+  </script>
+</body>
+</html>
