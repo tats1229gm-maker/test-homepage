@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="【テスト用サイト】CONTACT">
-  <title>CONTACT — TEST</title>
+  <meta name="description" content="CONTACT">
+  <title>CONTACT — FAO+design</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
@@ -18,8 +18,8 @@
 
   <header class="site-header is-scrolled">
     <a href="index.html" class="site-logo">
-      TEST
-      <small>テスト用サイト</small>
+      FAO+design
+      <small>株式会社FAOプラスデザイン</small>
     </a>
     <nav>
       <ul class="site-nav">
@@ -58,7 +58,11 @@
     </div>
 
     <div class="contact-wrap fade-in delay-1">
-      <form action="#" method="post" novalidate>
+      <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="218a0b74-dc1f-4c61-b470-95252798d8d0">
+        <input type="hidden" name="subject" value="FAO+design ウェブサイトからのお問い合わせ">
+        <input type="hidden" name="from_name" value="FAO+design Web Contact">
+        <input type="checkbox" name="botcheck" style="display:none">
 
         <div class="form-group">
           <label class="form-label" for="name">お名前<span class="req">※ 必須</span></label>
@@ -84,10 +88,10 @@
           <label class="form-label" for="subject">お問い合わせ種別<span class="req">※ 必須</span></label>
           <select class="form-input" id="subject" name="subject" required style="cursor:pointer;">
             <option value="" disabled selected>選択してください</option>
-            <option value="design">建築設計・企画のご相談</option>
-            <option value="estimate">お見積りのご依頼</option>
-            <option value="works">作品に関するお問い合わせ</option>
-            <option value="other">その他</option>
+            <option value="建築設計・企画のご相談">建築設計・企画のご相談</option>
+            <option value="お見積りのご依頼">お見積りのご依頼</option>
+            <option value="作品に関するお問い合わせ">作品に関するお問い合わせ</option>
+            <option value="その他">その他</option>
           </select>
         </div>
 
@@ -103,7 +107,9 @@
           </label>
         </div>
 
-        <button type="submit" class="btn-submit">SEND MESSAGE</button>
+        <div id="form-result" style="display:none; margin-bottom:1.5rem; padding:1rem 1.5rem; border-radius:4px; font-size:0.85rem; letter-spacing:0.05em;"></div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">SEND MESSAGE</button>
       </form>
 
       <div style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border);">
@@ -120,10 +126,50 @@
   </section>
 
   <footer class="site-footer">
-    <span class="footer-logo">TEST</span>
-    <span class="footer-copy">© TEST — テスト用サイト</span>
+    <span class="footer-logo">FAO+design</span>
+    <span class="footer-copy">© FAO+design All Rights Reserved.</span>
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    const form = document.getElementById('contact-form');
+    const result = document.getElementById('form-result');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'SENDING...';
+      result.style.display = 'none';
+
+      const data = new FormData(form);
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: data
+        });
+        const json = await res.json();
+        if (json.success) {
+          result.style.display = 'block';
+          result.style.background = 'rgba(201,169,110,0.1)';
+          result.style.border = '1px solid rgba(201,169,110,0.4)';
+          result.style.color = 'var(--accent)';
+          result.textContent = 'お問い合わせを受け付けました。担当者よりご連絡いたします。';
+          form.reset();
+        } else {
+          throw new Error(json.message);
+        }
+      } catch(err) {
+        result.style.display = 'block';
+        result.style.background = 'rgba(255,80,80,0.1)';
+        result.style.border = '1px solid rgba(255,80,80,0.4)';
+        result.style.color = '#ff6b6b';
+        result.textContent = '送信に失敗しました。しばらく経ってから再度お試しください。';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SEND MESSAGE';
+      }
+    });
+  </script>
 </body>
 </html>
