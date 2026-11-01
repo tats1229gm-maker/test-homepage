@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>社内用サイト</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',Meiryo,sans-serif;background:#2f3640;height:100vh;display:flex;align-items:center;justify-content:center}
+.box{background:#fff;padding:34px 30px;border-radius:12px;max-width:340px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.box h1{font-size:16px;font-weight:700;margin:0 0 4px}.box p{font-size:12.5px;color:#777;margin-bottom:16px}
+#pw{width:100%;padding:11px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px}
+#err{color:#c0392b;font-size:12px;height:16px;margin:8px 0}
+#go{width:100%;padding:11px;border:0;border-radius:8px;background:#2f3640;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+</style></head><body><div class="box"><h1>社内用サイト</h1><p>パスワードを入力してください</p>
+<input id="pw" type="password" autofocus><div id="err"></div><button id="go">開く</button></div>
+<script>
+(function(){
+ var SALT="rxvOQgsHELeAhmc8/iIswg==",ITERS=250000,HOME="home.html";
+ function b64d(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+ function b64e(a){var s="";a=new Uint8Array(a);for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
+ function norm(s){return s.normalize("NFKC").replace(/\s+/g,"").toLowerCase();}
+ function canon(n){return (n==="fao"||n==="ふぁお")?"fao":n;}
+ var pw=document.getElementById("pw"),err=document.getElementById("err");
+ if(localStorage.getItem("fao_k")){location.replace(HOME);return;}
+ async function go(){ err.textContent="";
+  var c=canon(norm(pw.value));
+  var bk=await crypto.subtle.importKey("raw",new TextEncoder().encode(c),{name:"PBKDF2"},false,["deriveBits"]);
+  var bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:b64d(SALT),iterations:ITERS,hash:"SHA-256"},bk,256);
+  var raw=new Uint8Array(bits);
+  try{ var key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["decrypt"]);
+   var buf=new Uint8Array(await (await fetch("home.enc",{cache:"no-store"})).arrayBuffer());
+   await crypto.subtle.decrypt({name:"AES-GCM",iv:buf.slice(0,12)},key,buf.slice(12));
+   localStorage.setItem("fao_k",b64e(raw)); location.replace(HOME);
+  }catch(e){ err.textContent="パスワードが違います"; pw.select(); } }
+ document.getElementById("go").onclick=go;
+ pw.addEventListener("keydown",function(e){if(e.key==="Enter")go();});
+})();
+</script></body></html>
